@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   TextField,
@@ -52,6 +52,17 @@ export default function BookingForm() {
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Refs for focusing on error fields
+  const fullNameRef = useRef<HTMLInputElement>(null);
+  const phoneNumberRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const addressRef = useRef<HTMLTextAreaElement>(null);
+  const pincodeRef = useRef<HTMLInputElement>(null);
+  const carTypeRef = useRef<HTMLDivElement>(null);
+  const packageRef = useRef<HTMLDivElement>(null);
+  const bookingDateRef = useRef<HTMLInputElement>(null);
+  const bookingTimeRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const savedData = getFormData();
     if (Object.keys(savedData).length > 0) {
@@ -102,43 +113,133 @@ export default function BookingForm() {
     }
   };
 
-  const validateStep = (step: number): boolean => {
+  const validateStep = (step: number): { isValid: boolean; firstErrorField: string | null } => {
     const newErrors: Record<string, boolean> = {};
     let isValid = true;
+    let firstErrorField: string | null = null;
+    const fieldLabels: Record<string, string> = {
+      fullName: 'Full Name',
+      phoneNumber: 'Phone Number',
+      email: 'Email Address',
+      address: 'Address',
+      pincode: 'Pincode',
+      carType: 'Car Type',
+      packageType: 'Package',
+      bookingDate: 'Booking Date',
+      bookingTime: 'Preferred Time',
+    };
 
     switch (step) {
       case 0:
-        if (!formData.fullName.trim()) { newErrors.fullName = true; isValid = false; }
+        if (!formData.fullName.trim()) { 
+          newErrors.fullName = true; 
+          isValid = false;
+          if (!firstErrorField) firstErrorField = 'fullName';
+        }
         if (!formData.phoneNumber.trim() || !/^\d{10}$/.test(formData.phoneNumber)) {
-          newErrors.phoneNumber = true; isValid = false;
+          newErrors.phoneNumber = true; 
+          isValid = false;
+          if (!firstErrorField) firstErrorField = 'phoneNumber';
         }
         if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-          newErrors.email = true; isValid = false;
+          newErrors.email = true; 
+          isValid = false;
+          if (!firstErrorField) firstErrorField = 'email';
         }
-        if (!formData.address.trim()) { newErrors.address = true; isValid = false; }
+        if (!formData.address.trim()) { 
+          newErrors.address = true; 
+          isValid = false;
+          if (!firstErrorField) firstErrorField = 'address';
+        }
         if (!formData.pincode.trim() || !/^\d{6}$/.test(formData.pincode)) {
-          newErrors.pincode = true; isValid = false;
+          newErrors.pincode = true; 
+          isValid = false;
+          if (!firstErrorField) firstErrorField = 'pincode';
         }
         break;
       case 1:
-        if (!formData.carType) { newErrors.carType = true; isValid = false; }
-        if (!formData.packageType) { newErrors.packageType = true; isValid = false; }
+        if (!formData.carType) { 
+          newErrors.carType = true; 
+          isValid = false;
+          if (!firstErrorField) firstErrorField = 'carType';
+        }
+        if (!formData.packageType) { 
+          newErrors.packageType = true; 
+          isValid = false;
+          if (!firstErrorField) firstErrorField = 'packageType';
+        }
         break;
       case 2:
-        if (!formData.bookingDate) { newErrors.bookingDate = true; isValid = false; }
-        if (!formData.bookingTime || selectedHour === '') { newErrors.bookingTime = true; isValid = false; }
+        if (!formData.bookingDate) { 
+          newErrors.bookingDate = true; 
+          isValid = false;
+          if (!firstErrorField) firstErrorField = 'bookingDate';
+        }
+        if (!formData.bookingTime || selectedHour === '') { 
+          newErrors.bookingTime = true; 
+          isValid = false;
+          if (!firstErrorField) firstErrorField = 'bookingTime';
+        }
         break;
     }
 
     setErrors(newErrors);
     if (!isValid) {
-      toast.error('Please fill all required fields correctly');
+      const errorFields = Object.keys(newErrors).map(key => fieldLabels[key] || key).join(', ');
+      toast.error(`Please fill the required fields: ${errorFields}`, {
+        duration: 4000,
+      });
+      
+      // Focus and scroll to first error field
+      setTimeout(() => {
+        switch (firstErrorField) {
+          case 'fullName':
+            fullNameRef.current?.focus();
+            fullNameRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+          case 'phoneNumber':
+            phoneNumberRef.current?.focus();
+            phoneNumberRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+          case 'email':
+            emailRef.current?.focus();
+            emailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+          case 'address':
+            addressRef.current?.focus();
+            addressRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+          case 'pincode':
+            pincodeRef.current?.focus();
+            pincodeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+          case 'carType':
+            carTypeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => {
+              const selectElement = carTypeRef.current?.querySelector('[role="combobox"]') as HTMLElement;
+              selectElement?.click();
+            }, 300);
+            break;
+          case 'packageType':
+            packageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+          case 'bookingDate':
+            bookingDateRef.current?.focus();
+            bookingDateRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+          case 'bookingTime':
+            bookingTimeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+        }
+      }, 100);
     }
-    return isValid;
+    
+    return { isValid, firstErrorField };
   };
 
   const handleNext = () => {
-    if (validateStep(activeStep)) {
+    const validation = validateStep(activeStep);
+    if (validation.isValid) {
       if (activeStep === steps.length - 1) {
         handleSubmit();
       } else {
@@ -170,7 +271,10 @@ export default function BookingForm() {
 
     try {
       await createBooking(bookingData);
-      toast.success('Booking confirmed! We will contact you soon 🚗');
+      toast.success('🎉 Booking confirmed! We will contact you soon.', {
+        duration: 5000,
+        icon: '🚗',
+      });
       clearFormData();
       setTimeout(() => {
         setFormData({
@@ -182,8 +286,11 @@ export default function BookingForm() {
         setSelectedMinute(0);
         setActiveStep(0);
       }, 2000);
-    } catch {
-      toast.error('Booking failed. Please try again.');
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast.error('❌ Booking failed. Please try again or contact support.', {
+        duration: 5000,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -253,6 +360,7 @@ export default function BookingForm() {
                 Full Name*
               </Typography>
               <TextField 
+                inputRef={fullNameRef}
                 fullWidth 
                 placeholder="Enter your full name"
                 value={formData.fullName}
@@ -271,6 +379,7 @@ export default function BookingForm() {
                   Phone Number*
                 </Typography>
                 <TextField 
+                  inputRef={phoneNumberRef}
                   fullWidth 
                   placeholder="10-digit mobile number"
                   value={formData.phoneNumber}
@@ -293,6 +402,7 @@ export default function BookingForm() {
                   Email Address*
                 </Typography>
                 <TextField 
+                  inputRef={emailRef}
                   fullWidth 
                   placeholder="your.email@example.com"
                   value={formData.email}
@@ -311,11 +421,12 @@ export default function BookingForm() {
               </Box>
             </Box>
 
-            <Box sx={{ mb: { xs: 1.5, md: 2.5 } }}>
+            <Box sx={{ mb: { xs: 1.5, md: '2.5' } }}>
               <Typography sx={{ color: '#FFFFFF', fontSize: { xs: '13px', md: '14px' }, fontWeight: 500, mb: 1 }}>
                 Pincode*
               </Typography>
               <TextField 
+                inputRef={pincodeRef}
                 fullWidth 
                 placeholder="e.g., 208020"
                 value={formData.pincode}
@@ -338,6 +449,7 @@ export default function BookingForm() {
                 Address*
               </Typography>
               <TextField 
+                inputRef={addressRef}
                 fullWidth 
                 placeholder="Enter your complete address"
                 value={formData.address}
@@ -369,7 +481,7 @@ export default function BookingForm() {
       case 1:
         return (
           <Box>
-            <Box sx={{ mb: { xs: 2, md: 3 } }}>
+            <Box sx={{ mb: { xs: 2, md: 3 } }} ref={carTypeRef}>
               <Typography sx={{ color: '#FFFFFF', fontSize: { xs: '15px', md: '18px' }, fontWeight: 600, mb: 1.5 }}>
                 Select Car Type*
               </Typography>
@@ -448,7 +560,7 @@ export default function BookingForm() {
               )}
             </Box>
 
-            <Box>
+            <Box ref={packageRef}>
               <Typography sx={{ color: '#FFFFFF', fontSize: { xs: '15px', md: '18px' }, fontWeight: 600, mb: 1.5 }}>
                 Choose Package*
               </Typography>
@@ -463,6 +575,9 @@ export default function BookingForm() {
                       background: 'rgba(0, 79, 158, 0.2)',
                       borderColor: '#004F9E',
                       borderWidth: '2px',
+                    }),
+                    ...(errors.packageType && formData.packageType !== pkg.name && {
+                      borderColor: 'rgba(244, 67, 54, 0.5)',
                     }),
                   }}
                 >
@@ -502,6 +617,7 @@ export default function BookingForm() {
                 Booking Date*
               </Typography>
               <TextField 
+                inputRef={bookingDateRef}
                 fullWidth 
                 type="date" 
                 value={formData.bookingDate}
@@ -530,7 +646,7 @@ export default function BookingForm() {
               )}
             </Box>
 
-            <Box sx={{ mb: { xs: 2.5, md: 3 } }}>
+            <Box sx={{ mb: { xs: 2.5, md: 3 } }} ref={bookingTimeRef}>
               <Typography sx={{ color: '#FFFFFF', fontSize: { xs: '13px', md: '14px' }, fontWeight: 500, mb: 1.5 }}>
                 Preferred Time*
               </Typography>
