@@ -106,18 +106,19 @@ export const formStyles = {
     background: 'linear-gradient(180deg, rgba(153, 153, 153, 0) 0%, rgba(0, 79, 158, 0.14) 100%)',
     backdropFilter: 'blur(4px)',
     borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-    padding: '16px 32px',
+    padding: '16px 16px',
     position: 'relative' as const,
     zIndex: 10,
   },
   contentContainer: {
     position: 'relative' as const,
     zIndex: 1,
-    padding: '40px 16px',
+    padding: { xs: '16px 12px', sm: '24px 16px', md: '40px 16px' },
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: 'calc(100vh - 72px)',
+    alignItems: { xs: 'flex-start', md: 'center' },
+    minHeight: { xs: 'calc(100vh - 64px)', md: 'calc(100vh - 72px)' },
+    overflowY: { xs: 'auto', md: 'visible' },
   },
   formCard: {
     background: 'radial-gradient(50% 50% at 50% 50%, rgba(255, 255, 255, 0.01) 0%, rgba(153, 153, 153, 0.01) 100%)',
@@ -176,5 +177,41 @@ export const formStyles = {
       borderColor: 'rgba(0, 79, 158, 0.6)',
       transform: 'translateY(-4px)',
     },
+  },
+  BtnBgColor: {
+    background: '#1688B6',
+  },
+  lightBlueColor: {
+    color: '#1688B6',
+  },
+  BtnTextColor: {
+    color: '#FFFFFF',
+  },
+  bold100: {
+    fontWeight: 100,
+  },
+  bold200: {
+    fontWeight: 200,
+  },
+  bold300: {
+    fontWeight: 300,
+  },
+  bold400: {
+    fontWeight: 400,
+  },
+  bold500: {
+      fontWeight: 500,
+  },
+  bold600: {
+    fontWeight: 600,
+  },  
+  bold700: {
+    fontWeight: 700,
+  },
+  bold800: {
+    fontWeight: 800,
+  },
+  bold900: {
+    fontWeight: 900,
   },
 };
