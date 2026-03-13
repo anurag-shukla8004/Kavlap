@@ -595,7 +595,7 @@ export default function BookingForm() {
                           {pkg.description}
                         </Typography>
                       </Box>
-                      <Typography variant="h5" sx={{ fontWeight: 700, color: '#004F9E', fontSize: { xs: '20px', md: '24px' } }}>
+                      <Typography variant="h5" sx={{ fontWeight: 700, color: '#FFF', fontSize: { xs: '20px', md: '24px' } }}>
                         ₹{pkg.price}
                       </Typography>
                     </Box>
