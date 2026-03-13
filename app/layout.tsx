@@ -14,10 +14,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kavlap",
-  description: "Kavlap door to door car wash",
+  title: "Kavlap - Door to Door Car Wash",
+  description: "Professional door-to-door car wash services. Book your car cleaning service online with Kavlap.",
+  keywords: "car wash, door to door, car cleaning, auto detailing, Kavlap",
+  authors: [{ name: "Kavlap" }],
+  creator: "Kavlap",
+  publisher: "Kavlap",
   icons: {
-    icon: "/Frame 33.svg",
+    icon: [
+      { url: "/Frame 33.svg", type: "image/svg+xml" },
+      { url: "/kavlap-logo.png", type: "image/png" }
+    ],
+    shortcut: "/Frame 33.svg",
+    apple: "/kavlap-logo.png",
+  },
+  manifest: "/manifest.json",
+  openGraph: {
+    title: "Kavlap - Door to Door Car Wash",
+    description: "Professional door-to-door car wash services. Book your car cleaning service online.",
+    type: "website",
+    siteName: "Kavlap",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kavlap - Door to Door Car Wash",
+    description: "Professional door-to-door car wash services. Book your car cleaning service online.",
   },
 };
 

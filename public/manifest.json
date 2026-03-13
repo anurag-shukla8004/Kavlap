@@ -1,0 +1,29 @@
+{
+  "name": "Kavlap - Door to Door Car Wash",
+  "short_name": "Kavlap",
+  "description": "Professional door-to-door car wash services. Book your car cleaning service online.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#004F9E",
+  "icons": [
+    {
+      "src": "/Frame 33.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/kavlap-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/kavlap-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
