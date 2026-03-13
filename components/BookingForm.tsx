@@ -26,7 +26,7 @@ const carTypes = ['Hatchback', 'Sedan', 'SUV'];
 const packages = [
   { name: 'Quick Shine', price: 149, description: 'Basic wash and exterior shine' },
   { name: 'Care Kit', price: 249, description: 'Complete interior & exterior cleaning' },
-  { name: 'Premium', price: 349, description: 'Premium detailing with wax coating' },
+  { name: 'Premium', price: 449, description: 'Premium detailing with wax coating' },
 ];
 
 const hours = Array.from({ length: 13 }, (_, i) => i + 9); // 9 AM to 9 PM
@@ -141,7 +141,7 @@ export default function BookingForm() {
           isValid = false;
           if (!firstErrorField) firstErrorField = 'phoneNumber';
         }
-        if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
           newErrors.email = true; 
           isValid = false;
           if (!firstErrorField) firstErrorField = 'email';
@@ -271,9 +271,13 @@ export default function BookingForm() {
 
     try {
       await createBooking(bookingData);
-      toast.success('🎉 Booking confirmed! We will contact you soon.', {
+      toast.success('Booking confirmed! We will contact you soon.', {
         duration: 5000,
         icon: '🚗',
+        style: {
+          background: 'green',
+          color: 'white',
+        },
       });
       clearFormData();
       setTimeout(() => {
@@ -399,7 +403,7 @@ export default function BookingForm() {
 
               <Box sx={{ flex: 1 }}>
                 <Typography sx={{ color: '#FFFFFF', fontSize: { xs: '13px', md: '14px' }, fontWeight: 500, mb: 1 }}>
-                  Email Address*
+                  Email Address
                 </Typography>
                 <TextField 
                   inputRef={emailRef}
