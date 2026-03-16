@@ -34,3 +34,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=kavlap&utm_campaign=kavlap-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Features
+
+### Real-time Notifications
+The admin dashboard includes real-time notifications for new bookings:
+- **Browser Notifications**: Get instant desktop notifications when customers book car wash services
+- **Permission Management**: Click "Enable Notifications" button in the admin panel to grant permission
+- **Real-time Updates**: Uses Supabase real-time subscriptions to listen for new bookings in the `user_booking` table
+- **Auto-play Sound**: Optional notification sound (add `notification.mp3` to `/public` folder)
+- **Click to Focus**: Clicking notifications brings the admin panel into focus
+
+**How it works:**
+1. Admin logs into `/admin` page
+2. Clicks "Enable Notifications" button to grant browser permission
+3. When a customer submits a booking form, Supabase triggers real-time event
+4. Admin receives instant browser notification with booking details
+5. Notification shows customer name, package type, and booking date
+6. Clicking notification focuses the admin window
+
+**Supported Browsers:** Chrome, Firefox, Safari, Edge (any browser with Notification API support)

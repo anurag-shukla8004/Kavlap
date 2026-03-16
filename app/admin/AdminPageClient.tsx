@@ -68,6 +68,20 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
+  // Notification states
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      return Notification.permission;
+    }
+    return 'default';
+  });
+  const [notificationEnabled, setNotificationEnabled] = useState(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      return Notification.permission === 'granted';
+    }
+    return false;
+  });
+
   // Check localStorage after mount to avoid hydration mismatch
   useEffect(() => {
     const loggedIn = localStorage.getItem('adminLoggedIn') === 'true';
@@ -123,6 +137,79 @@ export default function AdminPage() {
 
     return filtered;
   }, [bookings, dateFilter, searchQuery]);
+
+  // Notification functions
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      setNotificationPermission(permission);
+      setNotificationEnabled(permission === 'granted');
+      return permission === 'granted';
+    }
+    return false;
+  };
+
+  const showNotification = React.useCallback((booking: BookingData) => {
+    if (notificationEnabled && 'Notification' in window) {
+      const notification = new Notification('🚗 New Car Wash Booking!', {
+        body: `${booking.full_name} booked ${booking.package_type} for ${booking.booking_date}`,
+        icon: '/Frame 33.svg',
+        badge: '/Frame 33.svg',
+        tag: 'kavlap-booking',
+        requireInteraction: true,
+      });
+
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+
+      // Auto close after 10 seconds
+      setTimeout(() => notification.close(), 10000);
+    }
+  }, [notificationEnabled]);
+
+  // Real-time subscription for new bookings
+  useEffect(() => {
+    if (!authState.isLoggedIn) return;
+
+    const channel = supabase
+      .channel('new_bookings')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'user_booking',
+        },
+        (payload) => {
+          console.log('New booking received:', payload);
+          const newBooking = payload.new as BookingData;
+
+          // Add to bookings list
+          setBookings(prev => [newBooking, ...prev]);
+
+          // Show notification
+          showNotification(newBooking);
+
+          // Play notification sound (optional)
+          if ('Audio' in window) {
+            const audio = new Audio('/notification.mp3');
+            audio.volume = 0.3;
+            audio.play().catch(() => {
+              // Ignore audio play errors (user interaction required)
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [authState.isLoggedIn, showNotification]);
+
+  // Initialize notifications on mount (removed - now using useState initializer)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -279,6 +366,18 @@ export default function AdminPage() {
             <div className="bg-green-500 text-white px-4 py-2 rounded-lg">
               <span className="text-sm font-medium">Unread: {unreadCount}</span>
             </div>
+            <button
+              onClick={requestNotificationPermission}
+              disabled={notificationEnabled}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                notificationEnabled
+                  ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
+                  : 'bg-purple-500 text-white hover:bg-purple-600'
+              }`}
+              title={notificationEnabled ? 'Notifications enabled' : 'Click to enable notifications'}
+            >
+              {notificationEnabled ? '🔔 Notifications ON' : '🔕 Enable Notifications'}
+            </button>
           </div>
         </div>
 
