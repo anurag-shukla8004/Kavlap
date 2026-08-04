@@ -1,5 +1,5 @@
-import AdminPlaceholder from '@/components/admin/AdminPlaceholder';
+import WorkersClient from './WorkersClient';
 
-export default function WorkersPlaceholderPage() {
-  return <AdminPlaceholder title="Workers" stage="Stage 5" />;
+export default function AdminWorkersPage() {
+  return <WorkersClient />;
 }
