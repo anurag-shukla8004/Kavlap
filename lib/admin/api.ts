@@ -11,12 +11,24 @@ export class AdminApiError extends Error {
   }
 }
 
+/**
+ * Prefer same-origin `/backend` proxy (see next.config.ts rewrites).
+ * Falls back to NEXT_PUBLIC_API_URL when set to an absolute URL without using the proxy.
+ */
 const getBaseUrl = (): string => {
-  const base = process.env.NEXT_PUBLIC_API_URL;
-  if (!base) {
-    throw new AdminApiError('NEXT_PUBLIC_API_URL is not configured', 500);
+  const configured = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') ?? '';
+
+  // In the browser, always use the Next.js rewrite proxy to avoid CORS/CORP failures.
+  if (typeof window !== 'undefined') {
+    return '/backend';
   }
-  return base.replace(/\/$/, '');
+
+  // Server-side: talk to API directly when absolute URL is configured.
+  if (configured.startsWith('http://') || configured.startsWith('https://')) {
+    return configured;
+  }
+
+  return configured || 'http://localhost:3001';
 };
 
 type RequestOptions = {
@@ -31,14 +43,31 @@ export async function adminFetch<T>(
   options: RequestOptions = {},
 ): Promise<T> {
   const { method = 'GET', body, auth = true, query } = options;
+  const base = getBaseUrl();
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
-  const url = new URL(`${getBaseUrl()}${path.startsWith('/') ? path : `/${path}`}`);
-  if (query) {
-    Object.entries(query).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
-        url.searchParams.set(key, value);
-      }
-    });
+  let url: string;
+  if (base.startsWith('http://') || base.startsWith('https://')) {
+    const absolute = new URL(`${base}${normalizedPath}`);
+    if (query) {
+      Object.entries(query).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          absolute.searchParams.set(key, value);
+        }
+      });
+    }
+    url = absolute.toString();
+  } else {
+    const params = new URLSearchParams();
+    if (query) {
+      Object.entries(query).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          params.set(key, value);
+        }
+      });
+    }
+    const qs = params.toString();
+    url = `${base}${normalizedPath}${qs ? `?${qs}` : ''}`;
   }
 
   const headers: Record<string, string> = {
@@ -57,11 +86,19 @@ export async function adminFetch<T>(
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(url.toString(), {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new AdminApiError(
+      'Cannot reach API. Check kavlap-server is running and NEXT_PUBLIC_API_URL is set.',
+      0,
+    );
+  }
 
   let payload: ApiSuccess<T> | ApiError | null = null;
   try {
