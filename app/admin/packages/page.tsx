@@ -1,5 +1,5 @@
-import AdminPlaceholder from '@/components/admin/AdminPlaceholder';
+import PackagesClient from './PackagesClient';
 
-export default function PackagesPlaceholderPage() {
-  return <AdminPlaceholder title="Packages" stage="Stage 7" />;
+export default function AdminPackagesPage() {
+  return <PackagesClient />;
 }
