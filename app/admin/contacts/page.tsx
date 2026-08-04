@@ -1,5 +1,5 @@
-import AdminPlaceholder from '@/components/admin/AdminPlaceholder';
+import ContactsClient from './ContactsClient';
 
-export default function ContactsPlaceholderPage() {
-  return <AdminPlaceholder title="Contacts" stage="Stage 4" />;
+export default function AdminContactsPage() {
+  return <ContactsClient />;
 }
