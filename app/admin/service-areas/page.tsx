@@ -1,5 +1,5 @@
-import AdminPlaceholder from '@/components/admin/AdminPlaceholder';
+import ServiceAreasClient from './ServiceAreasClient';
 
-export default function ServiceAreasPlaceholderPage() {
-  return <AdminPlaceholder title="Service Areas" stage="Stage 6" />;
+export default function AdminServiceAreasPage() {
+  return <ServiceAreasClient />;
 }
