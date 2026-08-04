@@ -24,3 +24,22 @@ export type ApiError = {
   status: 'error';
   message: string;
 };
+
+export type AdminDashboardStats = {
+  date: string;
+  pendingReview: number;
+  confirmed: number;
+  assigned: number;
+  inProgress: number;
+  completedToday: number;
+  totalBookings: number;
+};
+
+export type BookingStatus =
+  | 'PENDING_REVIEW'
+  | 'CONFIRMED'
+  | 'ASSIGNED'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'CANCELLED'
+  | 'REJECTED';
