@@ -110,6 +110,73 @@ export type AdminActionResult = {
   message: string;
 };
 
+export type ServiceArea = {
+  id: string;
+  pincode: string;
+  city: string;
+  areaName: string;
+};
+
+export type TimeSlot = {
+  id: string;
+  slotDate: string;
+  startTime: string;
+  endTime: string;
+  maxCapacity: number;
+  bookedCount: number;
+  availableSpots: number;
+  isAvailable: boolean;
+};
+
+export type PackageSummary = {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  basePrice: number;
+  durationMinutes: number;
+  features: string[];
+};
+
+export type PackagePricing = {
+  id: string;
+  carType: CarType;
+  seater: Seater;
+  price: number;
+};
+
+export type PackageDetail = PackageSummary & {
+  pricing: PackagePricing[];
+};
+
+export type AdminReview = {
+  id: string;
+  bookingId: string;
+  rating: number;
+  comment: string | null;
+  isVisible: boolean;
+  createdAt: string;
+  user: { id: string; name: string };
+  worker: { id: string; name: string } | null;
+};
+
+export type ReviewActionResult = {
+  id: string;
+  isVisible: boolean;
+  message: string;
+};
+
+export type ContactRow = {
+  key: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  address: string;
+  pincode: string;
+  bookingsCount: number;
+  lastBookingDate: string;
+};
+
 export const BOOKING_STATUSES: BookingStatus[] = [
   'PENDING_REVIEW',
   'CONFIRMED',

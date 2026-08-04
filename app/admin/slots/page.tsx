@@ -1,5 +1,5 @@
-import AdminPlaceholder from '@/components/admin/AdminPlaceholder';
+import SlotsClient from './SlotsClient';
 
-export default function SlotsPlaceholderPage() {
-  return <AdminPlaceholder title="Time Slots" stage="Stage 3" />;
+export default function AdminSlotsPage() {
+  return <SlotsClient />;
 }
