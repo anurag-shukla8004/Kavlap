@@ -1,5 +1,5 @@
-import AdminPlaceholder from '@/components/admin/AdminPlaceholder';
+import ReviewsClient from './ReviewsClient';
 
-export default function ReviewsPlaceholderPage() {
-  return <AdminPlaceholder title="Reviews" stage="Stage 8" />;
+export default function AdminReviewsPage() {
+  return <ReviewsClient />;
 }
